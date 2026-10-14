@@ -4,19 +4,17 @@
 
 #include "interrupt.h"
 #include "timer.h"
-#include "rgb.h"
+#include "uart.h"
 
 int main(void)
 {
 	CLEAR_INTERRUPT;
-	init_rgb();
-	set_luminosity(25);
-	DDRB |= _BV(DDB0) | _BV(DDB1) | _BV(DDB2) | _BV(DDB4);
+	uart_init();
 	PRR &= ~_BV(PRADC); // disable porwer reduction for ADC (Manual recommend always putting it to 0 for security)
-	ADMUX = _BV(REFS0); // stay at Mux0 to use RV1
-	// Enable (ADEN) and set prescaler (ADPSx) to adjust resolution to max as zell a Setting up interruption (ADIE) and Auto trigger (ADATE)
-	ADCSRA = _BV(ADEN) | _BV(ADATE) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
-	ADCSRB = _BV(ADTS2) | _BV(ADTS0); // ADTS2 + ADTS0 = Timer1_compb
+	ADMUX = _BV(REFS0) | _BV(REFS1) | _BV(MUX3); // Set to ADC8
+	// Enable (ADEN), set prescaler to 128 (ADPSx), set interruption (ADIE) set auto trigger (ADATE)
+	ADCSRA = _BV(ADEN) | _BV(ADATE) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);   
+	ADCSRB = _BV(ADTS2) | _BV(ADTS0); // use Timer 1
 	OCR1A = 5000;
 	OCR1B = 5000; // every 20ms
 	TIMSK1 = _BV(OCIE1B); 
@@ -30,14 +28,9 @@ void	ADC_vect(void) __attribute__((NO_INTERRUP, USED, VISIBLE));
 
 void	ADC_vect(void)
 {
-	/*
-	 * We divide ADC by 1.1 as we know that 1 ADC ~= 1.1V (since we used it as reference). 
-	 * And Offset ADC by 368 s you can't have a 0V tension so the captor produce a base tension of
-	 * around 300 to 400mV. since its different for every choip (mainly cause of the variation in silicium engraving)
-	 */
-	uint16_t rv1 = ADC * 255UL / 1023;
-	uint16_t p = rv1 * 100UL / 255;
-	PORTB = ((p >= 25) ? _BV(PB0) : 0) | ((p >= 50) ? _BV(PB1) : 0) 
-		| ((p >= 75) ? _BV(PB2) : 0) | ((p == 100) ? _BV(PB4) : 0);
-	wheel(rv1);
+	// We subtract the offset to remove the sensor's base voltage at zero degrees,
+	// isolating only the portion of the reading that changes with temperature.
+	// divide by 1.1 a per our reference, to transform our obtained ADC count to celsius
+	uart_putnbr_base((ADC - 368) / 1.1, 10);
+	uart_printstr("\r\n");
 }

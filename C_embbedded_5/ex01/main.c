@@ -10,7 +10,7 @@ int main(void)
 {
 	CLEAR_INTERRUPT;
 	uart_init();
-	PRR &= ~_BV(PRADC); // disable porwer reduction for ADC (Manual recommend always putting it to 0 for security)
+	PRR &= ~_BV(PRADC); // disable power reduction for ADC (Manual recommend always putting it to 0 for security)
 	/*
 	 * ADCSRx = ADC Control and Status Register. It changes ADC behavior depending on the bit that are set
 	 * At start DC is not enabled for power comsuption reason so we set the Enable bit with ADEN (ADC enable)
@@ -45,7 +45,7 @@ void	TIMER1_COMPA_vect(void)
 	ADMUX |= _BV(MUX0); // ADC1 (R14)
 	adc_convert();
 	uart_printstr(", ");
-	ADMUX = _BV(REFS0) | _BV(MUX1); // ADC2 (R20)
+	ADMUX = _BV(REFS0) | _BV(MUX1) | _BV(ADLAR); // ADC2 (R20)
 	adc_convert();
 	uart_printstr("\r\n");
 }

@@ -8,7 +8,7 @@ CC:= avr-gcc
 
 CFLAGS:= -Wall -Werror -Wextra -mmcu=$(MMCU) -DF_CPU=$(F_CPU) -Os
 
-SRC:=main.c rgb.c uart.c
+SRC:=main.c uart.c
 
 OBJ = $(SRC:%.c=%.o)
 
