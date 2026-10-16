@@ -46,6 +46,22 @@ void uart_putnbr_base(uint16_t n, uint8_t base_length)
 		uart_tx(base[n]);
 }
 
+void uart_putnbr_base_width(uint16_t n, uint8_t base_len, int width, unsigned char pad)
+{
+    char buf[32];
+    int  i = 0;
+
+    do {
+        buf[i++] = base[n % base_len];
+        n /= base_len;
+    } while (n);
+
+    while (width-- > i)
+        uart_tx(pad);
+    while (i--)
+        uart_tx(buf[i]);
+}
+
 uint8_t uart_rx(void)
 {
 	/* Wait for data to be received */

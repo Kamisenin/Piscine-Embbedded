@@ -112,15 +112,7 @@ void	transmit_address(uint8_t address)
 
 void print_hex_value(unsigned char c)
 {
-	static const char base[17] = "0123456789ABCDEF";
-	
-	if (c >= 16)
-	{
-		print_hex_value(c / 16);
-		print_hex_value(c % 16);
-	}
-	else
-		uart_tx(base[c]);
+	uart_putnbr_base_width(c, 16, 2, '0');
 }
 
 void	wait_transmission()

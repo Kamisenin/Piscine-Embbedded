@@ -27,6 +27,6 @@ int main(void)
 			uart_printstr("\r\n");
 		}
 		i2c_stop();
-		while (TWCR & (1 << TWSTO));
+		while (TWCR & _BV(TWSTO));
 	}
 }	

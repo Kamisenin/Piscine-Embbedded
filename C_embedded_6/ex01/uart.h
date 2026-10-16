@@ -7,3 +7,4 @@ void	uart_tx(char c);
 void	uart_init();
 void	uart_printstr(const char* str);
 void    uart_putnbr_base(uint16_t n, uint8_t base_length);
+void    uart_putnbr_base_width(uint16_t n, uint8_t base_len, int width, unsigned char pad);

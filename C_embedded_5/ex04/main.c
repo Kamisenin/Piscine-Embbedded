@@ -29,11 +29,6 @@ void	ADC_vect(void) __attribute__((NO_INTERRUP, USED, VISIBLE));
 
 void	ADC_vect(void)
 {
-	/*
-	 * We divide ADC by 1.1 as we know that 1 ADC ~= 1.1V (since we used it as reference). 
-	 * And Offset ADC by 368 s you can't have a 0V tension so the captor produce a base tension of
-	 * around 300 to 400mV. since its different for every choip (mainly cause of the variation in silicium engraving)
-	 */
 	uint16_t rv1 = ADCH;
 	uint16_t p = rv1 * 100UL / 255;
 	PORTB = ((p >= 25) ? _BV(PB0) : 0) | ((p >= 50) ? _BV(PB1) : 0) 

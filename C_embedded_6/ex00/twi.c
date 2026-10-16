@@ -14,8 +14,7 @@ void	i2c_init(void)
 	TWCR |= TW_ACK;
 	// TWSR = TWI Status Register. It stores TWI communication status code and prescaler
 	TWSR &= ~(_BV(TWPS1) | _BV(TWPS0)); // clear the prescaler to 1 (posiblity : 1, 4, 16 and 64, none give round number so we take the nearest which is 1) technically it is already set to 0 but for security reason we clear it to 0
-	TWBR = 79; // Bit rate value to reach a 100kHz
-	TWAR = 0x12 << 1;
+	TWBR = 72; // Bit rate value to reach a 100kHz
 }
 
 
